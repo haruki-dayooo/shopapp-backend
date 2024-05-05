@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,10 +50,11 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            MultipartFile file = product.getFile();
-            if (file != null) {
-                var tenMegaByte = 10 * 1024 * 1024;
-                if (file.getSize() > tenMegaByte) {
+            List<MultipartFile> files = product.getFiles();
+            files = (files == null) ? new ArrayList<>() : files;
+            for (MultipartFile file : files) {
+                if (file.getSize() == 0) continue;
+                if (file.getSize() > 10 * 1024 * 1024) {
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                             .body("File is too large! Maximum file size is 10MB.");
                 }
