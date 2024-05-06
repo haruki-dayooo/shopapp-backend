@@ -35,12 +35,12 @@ public class CategoryController {
         return ResponseEntity.ok("Insert category: " + category);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> updateCategories(@PathVariable Long id) {
         return ResponseEntity.ok("Update category with ID: " + id);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategories(@PathVariable Long id) {
         return ResponseEntity.ok("Delete category with ID: " + id);
     }
