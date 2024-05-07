@@ -49,6 +49,6 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@Valid @PathVariable Long id) {
-        return ResponseEntity.ok("Order deleted successfully");
+        return ResponseEntity.ok("Order detail deleted successfully");
     }
 }
