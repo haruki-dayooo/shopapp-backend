@@ -1,7 +1,10 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.CategoryDTO;
+import com.project.shopapp.models.Category;
+import com.project.shopapp.services.CategoryService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -11,19 +14,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/categories")
+@RequiredArgsConstructor
 public class CategoryController {
-    //Show all categories
-    @GetMapping("")
-    public ResponseEntity<String> getAllCategories(
-            @RequestParam("page")   int page,
-            @RequestParam("limit")  int limit
-    ) {
-        return ResponseEntity.ok(String.format("getAllCategories, page= %d, limit= %d", page, limit));
-    }
+
+    private final CategoryService categoryService;
 
     @PostMapping("")
-    public ResponseEntity<?> insertCategories(
-            @Valid @RequestBody CategoryDTO category,
+    public ResponseEntity<?> createCategories(
+            @Valid @RequestBody CategoryDTO categoryDTO,
             BindingResult result) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
@@ -32,16 +30,31 @@ public class CategoryController {
                     .toList();
             return ResponseEntity.badRequest().body(errorMessages);
         }
-        return ResponseEntity.ok("Insert category: " + category);
+        categoryService.createCategory(categoryDTO);
+        return ResponseEntity.ok("Insert category successfully!");
+    }
+
+    //Show all categories
+    @GetMapping("")
+    public ResponseEntity<List<Category>> getAllCategories(
+            @RequestParam("page")   int page,
+            @RequestParam("limit")  int limit
+    ) {
+        List<Category> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategories(@PathVariable Long id) {
-        return ResponseEntity.ok("Update category with ID: " + id);
+    public ResponseEntity<String> updateCategories(
+            @PathVariable Long id,
+            @RequestBody CategoryDTO categoryDTO) {
+        categoryService.updateCategory(id, categoryDTO);
+        return ResponseEntity.ok("Update category successfully!");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategories(@PathVariable Long id) {
-        return ResponseEntity.ok("Delete category with ID: " + id);
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok("Delete category with id: " + id + " successfully!");
     }
 }

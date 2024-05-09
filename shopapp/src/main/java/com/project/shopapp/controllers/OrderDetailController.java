@@ -15,7 +15,7 @@ public class OrderDetailController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createOrderDetail(
-            @Valid @RequestBody OrderDetailDTO orderDetail,
+            @Valid @RequestBody OrderDetailDTO orderDetailDTO,
             BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -52,8 +52,8 @@ public class OrderDetailController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateOrderDetail(
             @Valid @PathVariable Long id,
-            @Valid @RequestBody OrderDetailDTO orderDetail) {
-        return ResponseEntity.ok("Update order with ID: " + id + ". New order detail: " + orderDetail);
+            @Valid @RequestBody OrderDetailDTO orderDetailDTO) {
+        return ResponseEntity.ok("Update order with ID: " + id + ". New order detail: " + orderDetailDTO);
     }
 
     @DeleteMapping("/{id}")

@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserDTO user,
+            @Valid @RequestBody UserDTO userDTO,
             BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -29,7 +29,7 @@ public class UserController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            if(!user.getPassword().equals(user.getConfirmPassword())) {
+            if(!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
                 return ResponseEntity.badRequest().body("Password does not match!");
             }
             return ResponseEntity.ok("Register successfully!");
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLogin) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         return ResponseEntity.ok("some token");
     }
 }

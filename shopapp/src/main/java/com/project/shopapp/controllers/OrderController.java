@@ -15,7 +15,7 @@ public class OrderController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(
-            @Valid @RequestBody OrderDTO order,
+            @Valid @RequestBody OrderDTO orderDTO,
             BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -43,7 +43,7 @@ public class OrderController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateOrder(
             @Valid @PathVariable Long id,
-            @Valid @RequestBody OrderDTO order) {
+            @Valid @RequestBody OrderDTO orderDTO) {
         return ResponseEntity.ok("Update order with user ID: " + id);
     }
 

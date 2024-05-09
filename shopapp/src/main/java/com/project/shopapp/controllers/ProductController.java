@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -38,7 +39,7 @@ public class ProductController {
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProduct(
-            @Valid @ModelAttribute ProductDTO product,
+            @Valid @ModelAttribute ProductDTO productDTO,
             //@RequestPart("file") MultipartFile file,
             BindingResult result
     ) {
@@ -50,7 +51,7 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            List<MultipartFile> files = product.getFiles();
+            List<MultipartFile> files = productDTO.getFiles();
             files = (files == null) ? new ArrayList<>() : files;
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) continue;
@@ -79,7 +80,7 @@ public class ProductController {
     }
 
     private String storeFile(MultipartFile file) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
         java.nio.file.Path uploadDir = Paths.get("uploads");
         if (!Files.exists(uploadDir)) {
