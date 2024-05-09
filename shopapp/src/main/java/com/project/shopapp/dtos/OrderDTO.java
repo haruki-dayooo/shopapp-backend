@@ -20,7 +20,7 @@ public class OrderDTO {
     private Long userId;
 
     @JsonProperty("fullname")
-    private String fullname;
+    private String fullName;
 
     private String email;
 

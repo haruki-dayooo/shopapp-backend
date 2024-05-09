@@ -2,6 +2,7 @@ package com.project.shopapp.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User extends BaseEntity {
 
     @Id
@@ -17,7 +19,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(name = "fullname", length = 100)
-    private String fullname;
+    private String fullName;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
@@ -41,5 +43,5 @@ public class User extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role roleId;
+    private Role role;
 }
