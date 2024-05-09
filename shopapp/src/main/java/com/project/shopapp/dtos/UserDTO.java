@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class UserDTO {
     private String confirmPassword;
 
     @JsonProperty("date_of_birth")
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @JsonProperty("facebook_account_id")
     private int facebookAccountId;
