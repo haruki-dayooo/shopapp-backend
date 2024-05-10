@@ -1,7 +1,14 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.ProductDTO;
+import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.models.Product;
+import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.services.IProductService;
+import com.project.shopapp.services.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +29,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
+
+    private final IProductService productService;
+
     @GetMapping("")
     public ResponseEntity<String> getProducts(
             @RequestParam("page")   int page,
@@ -37,9 +48,10 @@ public class ProductController {
         return ResponseEntity.ok("Product with ID: " + productId);
     }
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "")
     public ResponseEntity<?> createProduct(
-            @Valid @ModelAttribute ProductDTO productDTO,
+            @Valid @RequestBody ProductDTO productDTO,
+            //@ModelAttribute("files") List<MultipartFile> files,
             //@RequestPart("file") MultipartFile file,
             BindingResult result
     ) {
@@ -51,10 +63,24 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            List<MultipartFile> files = productDTO.getFiles();
+            Product newProduct = productService.createProduct(productDTO);
+
+            return ResponseEntity.ok(newProduct);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(@PathVariable("id") Long productId,
+                                          @ModelAttribute("files") List<MultipartFile> files) {
+        try {
+            Product existProduct = productService.getProductByID(productId);
+            List<ProductImage> productImages = new ArrayList<>();
             files = (files == null) ? new ArrayList<>() : files;
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) continue;
+
                 if (file.getSize() > 10 * 1024 * 1024) {
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                             .body("File is too large! Maximum file size is 10MB.");
@@ -65,20 +91,19 @@ public class ProductController {
                             .body("File must be an image!");
                 }
                 String filename = storeFile(file);
+
+                ProductImage productImage = productService.createProductImage(
+                        existProduct.getId(),
+                        ProductImageDTO.builder()
+                                .imageUrl(filename)
+                                .build());
+                productImages.add(productImage);
             }
-            return ResponseEntity.ok("Product created successfully!");
+            return ResponseEntity.ok().body(productImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-//        {
-//            "name": "Ipad pro 2024",
-//                "price": "8000000",
-//                "thumbnail": "",
-//                "description": "This is a test product",
-//                "category_id": 1
-//        }
     }
-
     private String storeFile(MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
