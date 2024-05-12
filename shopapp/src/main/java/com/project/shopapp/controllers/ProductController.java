@@ -78,6 +78,10 @@ public class ProductController {
             Product existProduct = productService.getProductByID(productId);
             List<ProductImage> productImages = new ArrayList<>();
             files = (files == null) ? new ArrayList<>() : files;
+            if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+                return ResponseEntity.badRequest().body("You can only upload maximum "
+                        + ProductImage.MAXIMUM_IMAGES_PER_PRODUCT + " images!");
+            }
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) continue;
 
@@ -105,6 +109,9 @@ public class ProductController {
         }
     }
     private String storeFile(MultipartFile file) throws IOException {
+//        if (!isImageFile(file) || file.getOriginalFilename() == null) {
+//            throw new IOException("Invalid image format");
+//        }
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
         java.nio.file.Path uploadDir = Paths.get("uploads");
@@ -115,6 +122,11 @@ public class ProductController {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFileName;
     }
+
+//    private boolean isImageFile(MultipartFile file) {
+//        String contentType = file.getContentType();
+//        return contentType != null && contentType.startsWith("image/");
+//    }
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
