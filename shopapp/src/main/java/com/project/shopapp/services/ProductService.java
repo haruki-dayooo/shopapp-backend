@@ -10,6 +10,7 @@ import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.repositories.CategoryRepository;
 import com.project.shopapp.repositories.ProductImageRepository;
 import com.project.shopapp.repositories.ProductRepository;
+import com.project.shopapp.responses.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,8 +50,19 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Page<Product> getAllProduct(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest);
+    public Page<ProductResponse> getAllProduct(PageRequest pageRequest) {
+        return productRepository.findAll(pageRequest).map(product -> {
+            ProductResponse productResponse = ProductResponse.builder()
+                    .name(product.getName())
+                    .price(product.getPrice())
+                    .thumbnail(product.getThumbnail())
+                    .description(product.getDescription())
+                    .categoryId(product.getCategory().getId())
+                    .build();
+            productResponse.setCreatedAt(product.getCreatedAt());
+            productResponse.setUpdatedAt(product.getUpdatedAt());
+            return productResponse;
+        });
     }
 
     @Override
