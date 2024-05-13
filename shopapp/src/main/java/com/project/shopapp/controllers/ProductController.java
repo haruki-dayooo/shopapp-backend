@@ -56,9 +56,13 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getProductByID(@PathVariable("id") String productId) {
-
-        return ResponseEntity.ok("Product with ID: " + productId);
+    public ResponseEntity<?> getProductByID(@PathVariable("id") Long productId) {
+        try {
+            Product existingProduct = productService.getProductByID(productId);
+            return ResponseEntity.ok(ProductResponse.fromProduct(existingProduct));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping(value = "")
@@ -143,6 +147,11 @@ public class ProductController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+        try {
+            productService.deleteProduct(id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully!");
     }
 
