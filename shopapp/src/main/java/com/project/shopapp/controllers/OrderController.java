@@ -1,6 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.OrderDTO;
+import com.project.shopapp.models.Order;
 import com.project.shopapp.responses.OrderResponse;
 import com.project.shopapp.services.IOrderService;
 import jakarta.validation.Valid;
@@ -39,23 +40,40 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<String> getOrders(@Valid @PathVariable("user_id") Long userId) {
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<?> getOrders(@Valid @PathVariable("user_id") Long userId) {
         try {
-            return ResponseEntity.ok("Get orders from user with ID: " + userId);
+            List<OrderResponse> orderResponses = orderService.findByUserId(userId);
+            return ResponseEntity.ok(orderResponses);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrder(@Valid @PathVariable("id") Long id) {
+        try {
+            OrderResponse existingOrder = orderService.getOrder(id);
+            return ResponseEntity.ok(existingOrder );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateOrder(
+    public ResponseEntity<?> updateOrder(
             @Valid @PathVariable Long id,
             @Valid @RequestBody OrderDTO orderDTO) {
-        return ResponseEntity.ok("Update order with user ID: " + id);
+        try {
+            OrderResponse updateOrder = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(updateOrder);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@Valid @PathVariable Long id) {
+        orderService.deleteOrder(id);
         return ResponseEntity.ok("Order detail deleted successfully");
     }
 }
