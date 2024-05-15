@@ -35,6 +35,7 @@ public class OrderDetailService implements IOrderDetailService {
         OrderDetail orderDetail = OrderDetail.builder()
                 .order(existingOrder)
                 .product(existingProduct)
+                .price(orderDetailDTO.getPrice())
                 .numberOfProducts(Math.toIntExact(orderDetailDTO.getNumberOfProducts()))
                 .totalMoney(orderDetailDTO.getTotalMoney())
                 .color(orderDetailDTO.getColor())
@@ -51,13 +52,23 @@ public class OrderDetailService implements IOrderDetailService {
 
     @Override
     public OrderDetail updateOrderDetail(Long id, OrderDetailDTO orderDetailDTO) throws Exception {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find order detail with order ID: " + id));
+        OrderDetail orderDetail = orderDetailRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find order detail with ID: " + id));
+
+        Order order = orderRepository.findById(orderDetailDTO.getOrderId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find order detail with order ID: "
+                        + orderDetailDTO.getOrderId()));
 
         Product product = productRepository.findById(orderDetailDTO.getProductId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find product with ID:"
                         + orderDetailDTO.getProductId()));
-        return null;
+        orderDetail.setOrder(order);
+        orderDetail.setProduct(product);
+        orderDetail.setPrice(orderDetailDTO.getPrice());
+        orderDetail.setNumberOfProducts(Math.toIntExact(orderDetailDTO.getNumberOfProducts()));
+        orderDetail.setTotalMoney(orderDetail.getTotalMoney());
+        orderDetail.setColor(orderDetailDTO.getColor());
+        return orderDetailRepository.save(orderDetail);
     }
 
     @Override
