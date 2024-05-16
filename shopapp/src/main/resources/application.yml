@@ -23,3 +23,6 @@ server:
   port: 8088
 api:
   prefix: api/v1
+jwt:
+  expiration: 2592000 #30days = 30 * 24 * 60 * 60
+  secretKey: oECZesRgF+ovs5dtRm6SBSCwG6cPsf+1ntMDOdS5W4Q=

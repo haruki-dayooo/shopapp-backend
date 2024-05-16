@@ -68,8 +68,6 @@ public class ProductController {
     @PostMapping(value = "")
     public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO productDTO,
-            //@ModelAttribute("files") List<MultipartFile> files,
-            //@RequestPart("file") MultipartFile file,
             BindingResult result
     ) {
         try {
