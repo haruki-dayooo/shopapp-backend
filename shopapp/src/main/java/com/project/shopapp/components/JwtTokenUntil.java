@@ -5,11 +5,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoder;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -75,5 +75,15 @@ public class JwtTokenUntil {
         Date expiration = this.extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
 
+    }
+
+    public String extractPhoneNumber (String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean validateToken (String token, UserDetails userDetails) {
+        String phoneNumber = extractPhoneNumber(token);
+        return (phoneNumber.equals(userDetails.getUsername())) &&
+                !isTokenExpired(token);
     }
 }
